@@ -10,7 +10,6 @@ from user.serializers import *
 
 @api_view(['POST'])
 def user_signup(request):
-  print(request)
   data = request.data
   username = data.get('username', None)
   password = data.get('password', None)
@@ -37,8 +36,6 @@ def user_signup(request):
     )
 
   user, created = User.objects.get_or_create(username=username)
-  print(user)
-  print(created)
   if created:
     user.email = email
     user.set_password(password)
@@ -58,7 +55,7 @@ def user_signup(request):
   )
 
 @api_view(['GET', 'PUT', 'PATCH'])
-#@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated,))
 def get_user(request):
   if request.method == 'GET':
     user_serializer = UserSerializer(request.user)
@@ -78,7 +75,6 @@ def get_user(request):
     )
 class UserList(generics.ListAPIView):
   queryset = User.objects.all()
-  print(queryset)
   serializer_class = UserListSerializer
 
 @api_view(['POST'])
