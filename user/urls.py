@@ -9,4 +9,5 @@ urlpatterns = [
   url(r'login$', obtain_auth_token),
   url(r'profile$', views.get_user),
   url(r'^userlist$', views.UserList.as_view()),
+  url(r'duplicate$', views.duplicate_username),
 ]

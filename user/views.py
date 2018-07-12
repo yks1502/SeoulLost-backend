@@ -80,7 +80,7 @@ class UserList(generics.ListAPIView):
   queryset = User.objects.all()
   print(queryset)
   serializer_class = UserListSerializer
-'''
+
 @api_view(['POST'])
 def duplicate_username(request):
   username = request.data
@@ -93,34 +93,3 @@ def duplicate_username(request):
     data = {'message': '사용할 수 있는 아이디입니다'},
     status = status.HTTP_200_OK,
   )
-
-@api_view(['GET'])
-@permission_classes((IsAuthenticated,))
-def user_transactions(request):
-  user_transaction_serializer = UserTransactionSerializer(request.user)
-  return Response(user_transaction_serializer.data)
-
-@api_view(['GET'])
-@permission_classes((IsAuthenticated,))
-def user_interests(request):
-  user_interest_serializer = UserInterestSerializer(request.user)
-  return Response(user_interest_serializer.data)
-
-@api_view(['GET', 'DELETE'])
-@permission_classes((IsAuthenticated,))
-def user_alarms(request):
-  user = request.user
-  if request.method == 'GET':
-    user_alarm_serializer = UserAlarmSerializer(user)
-    return Response(user_alarm_serializer.data)
-
-  elif request.method == 'DELETE':
-    with transaction.atomic():
-      sale_alarms = SaleAlarm.objects.filter(user=user)
-      purchase_alarms = PurchaseAlarm.objects.filter(user=user)
-      sale_alarms.delete()
-      purchase_alarms.delete()
-      return Response(
-        data = {'message': '알림이 삭제되었습니다'},
-      )
-      '''
