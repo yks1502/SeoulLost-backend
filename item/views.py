@@ -25,27 +25,25 @@ def lostList(request):
       serializer.save()
       return Response(
         data = {'message': 'Lost list에 추가되었습니다'},
-        status = status.HTTP_200_OK,
+        status = status.HTTP_201_CREATED,
       )
-    print(serializer.errors)
     return Response(
-      data = {'message':'오류'},
+      data = {'message': '오류'},
       status = status.HTTP_403_FORBIDDEN,
     )
   elif request.method == 'GET':
     queryset = Lost.objects.all()
     serializers = LostSerializer(queryset, many=True)
-    print(serializers.data)
     return Response(serializers.data)
 
 @api_view(['GET', 'DELETE', 'PUT'])
 @permission_classes((IsAuthenticated,))
-def lostDetail(request,pk):
+def lostDetail(request, pk):
   user = request.user
   lost = Lost.objects.get(pk=pk)
   if user != lost.user:
     return Response(
-    data={'message':'권한이 없습니다'}
+    data={'message': '권한이 없습니다'}
   )
   if request.method == 'GET':
     lost_serializer = LostSerializer(lost)
@@ -58,7 +56,7 @@ def lostDetail(request,pk):
   elif request.method == 'PUT':
     dictData = request.data.dict()
     dictData['user'] = request.user.id
-    modifiedQueryDict = QueryDict('',mutable=True)
+    modifiedQueryDict = QueryDict('', mutable=True)
     modifiedQueryDict.update(dictData)
     serializer = LostSerializer(lost, data=modifiedQueryDict)
     if serializer.is_valid():
@@ -72,12 +70,12 @@ def lostDetail(request,pk):
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
-def complete_lost(request, pk):
+def completeLost(request, pk):
   user = request.user
   lost = Lost.objects.get(pk=pk)
   if user != lost.user:
     return Response(
-      data = {'message':'권한이 없습니다'}
+      data = {'message': '권한이 없습니다'}
     )
   lost.isComplete = True
   lost.save()
@@ -101,15 +99,13 @@ def foundList(request):
         data = {'message': 'Found list에 추가되었습니다'},
         status = status.HTTP_200_OK,
       )
-    print(serializer.errors)
     return Response(
-      data = {'message':'오류'},
+      data = {'message': '오류'},
       status = status.HTTP_403_FORBIDDEN,
     )
   elif request.method == 'GET':
     queryset = Found.objects.all()
     serializers = FoundSerializer(queryset, many=True)
-    print(serializers.data)
     return Response(serializers.data)
 
 @api_view(['GET', 'DELETE', 'PUT'])
@@ -119,7 +115,7 @@ def foundDetail(request, pk):
   found = Found.objects.get(pk=pk)
   if user != found.user:
     return Response(
-    data = {'message':'권한이 없습니다'}
+    data = {'message': '권한이 없습니다'}
   )
   if request.method == 'GET':
     found_serializer = FoundSerializer(found)
@@ -145,12 +141,12 @@ def foundDetail(request, pk):
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
-def complete_found(request, pk):
+def completeFound(request, pk):
   user = request.user
   found = Found.objects.get(pk=pk)
   if user != found.user:
     return Response(
-      data = {'message':'권한이 없습니다'}
+      data = {'message': '권한이 없습니다'}
     )
   found.isComplete = True
   found.save()
