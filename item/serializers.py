@@ -10,7 +10,7 @@ class LostSerializer(serializers.ModelSerializer):
     model = Lost
     fields = ('id','user', 'created', 'updated', 'title','itemType',
     'acquiredDate', 'acquiredTime', 'storagePlace',
-    'acquiredPlace', 'color', 'comment', 'isComplete', 'image')
+    'acquiredPlace', 'color', 'comment', 'isComplete', 'image','lat','long')
 
 class FoundSerializer(serializers.ModelSerializer):
   image = serializers.ImageField(use_url=True, required=False)

@@ -1,6 +1,7 @@
 from django.db import models
 
 from user.models import User
+from decimal import Decimal
 # Create your models here.
 class Lost(models.Model):
   user = models.ForeignKey(User, related_name='my_lost', on_delete=models.CASCADE)
@@ -16,6 +17,8 @@ class Lost(models.Model):
   comment = models.CharField(max_length=1000, blank=True, null=True)
   isComplete = models.BooleanField(default=False)
   image = models.ImageField(blank=True, null=True)
+  lat = models.DecimalField(max_digits=10, decimal_places=8,blank=True,null=True)
+  long = models.DecimalField(max_digits=11, decimal_places=8,blank=True,null=True)
   class Meta:
     ordering = ('-created',)
 
@@ -33,5 +36,7 @@ class Found(models.Model):
   comment = models.CharField(max_length=1000, blank=True, null=True)
   isComplete = models.BooleanField(default=False)
   image = models.ImageField(blank=True, null=True)
+  lat = models.DecimalField(max_digits=10, decimal_places=8,blank=True,null=True)
+  long = models.DecimalField(max_digits=11, decimal_places=8,blank=True,null=True)
   class Meta:
     ordering = ('-created',)
