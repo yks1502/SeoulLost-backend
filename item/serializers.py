@@ -18,4 +18,4 @@ class FoundSerializer(serializers.ModelSerializer):
     model = Found
     fields = ('id','user', 'created', 'updated', 'title','itemType',
     'acquiredDate', 'acquiredTime', 'storagePlace',
-    'acquiredPlace', 'color', 'comment', 'isComplete', 'image')
+    'acquiredPlace', 'color', 'comment', 'isComplete', 'image','lat','long')
