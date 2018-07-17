@@ -12,19 +12,19 @@ from user.models import User
 from user.permissions import IsOwner, IsOwnerOrReadOnly
 from django.http import QueryDict
 
-@api_view(['POST','GET'])
+@api_view(['POST', 'GET'])
 @permission_classes((IsAuthenticated,))
 def lostList(request):
   if request.method == 'POST':
     dictData = request.data.dict()
-    dictData['user']=request.user.id
-    modifiedQueryDict = QueryDict('',mutable =True)
+    dictData['user'] = request.user.id
+    modifiedQueryDict = QueryDict('', mutable=True)
     modifiedQueryDict.update(dictData)
     serializer = LostSerializer(data=modifiedQueryDict)
     if serializer.is_valid():
       serializer.save()
       return Response(
-        data={'message': 'Lost list에 추가되었습니다'},
+        data = {'message': 'Lost list에 추가되었습니다'},
         status = status.HTTP_200_OK,
       )
     print(serializer.errors)
@@ -38,7 +38,7 @@ def lostList(request):
     print(serializers.data)
     return Response(serializers.data)
 
-@api_view(['GET','DELETE','PUT'])
+@api_view(['GET', 'DELETE', 'PUT'])
 @permission_classes((IsAuthenticated,))
 def lostDetail(request,pk):
   user = request.user
@@ -57,8 +57,8 @@ def lostDetail(request,pk):
     )
   elif request.method == 'PUT':
     dictData = request.data.dict()
-    dictData['user']=request.user.id
-    modifiedQueryDict = QueryDict('',mutable =True)
+    dictData['user'] = request.user.id
+    modifiedQueryDict = QueryDict('',mutable=True)
     modifiedQueryDict.update(dictData)
     serializer = LostSerializer(lost, data=modifiedQueryDict)
     if serializer.is_valid():
@@ -72,7 +72,7 @@ def lostDetail(request,pk):
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
-def complete_lost(request,pk):
+def complete_lost(request, pk):
   user = request.user
   lost = Lost.objects.get(pk=pk)
   if user != lost.user:
@@ -86,13 +86,13 @@ def complete_lost(request,pk):
     status = status.HTTP_200_OK,
   )
 
-@api_view(['POST','GET'])
+@api_view(['POST', 'GET'])
 @permission_classes((IsAuthenticated,))
 def foundList(request):
   if request.method == 'POST':
     dictData = request.data.dict()
     dictData['user'] = request.user.id
-    modifiedQueryDict = QueryDict('',mutable =True)
+    modifiedQueryDict = QueryDict('', mutable=True)
     modifiedQueryDict.update(dictData)
     serializer = FoundSerializer(data=modifiedQueryDict)
     if serializer.is_valid():
@@ -112,9 +112,9 @@ def foundList(request):
     print(serializers.data)
     return Response(serializers.data)
 
-@api_view(['GET','DELETE','PUT'])
+@api_view(['GET', 'DELETE', 'PUT'])
 @permission_classes((IsAuthenticated,))
-def foundDetail(request,pk):
+def foundDetail(request, pk):
   user = request.user
   found = Found.objects.get(pk=pk)
   if user != found.user:
@@ -132,7 +132,7 @@ def foundDetail(request,pk):
   elif request.method == 'PUT':
     dictData = request.data.dict()
     dictData['user'] = request.user.id
-    modifiedQueryDict = QueryDict('',mutable =True)
+    modifiedQueryDict = QueryDict('', mutable=True)
     modifiedQueryDict.update(dictData)
     serializer = FoundSerializer(found, data=modifiedQueryDict)
     if serializer.is_valid():
@@ -145,7 +145,7 @@ def foundDetail(request,pk):
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
-def complete_found(request,pk):
+def complete_found(request, pk):
   user = request.user
   found = Found.objects.get(pk=pk)
   if user != found.user:
