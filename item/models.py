@@ -15,7 +15,7 @@ class Lost(models.Model):
   color = models.CharField(max_length=20, blank=True, null=True)
   content = models.CharField(max_length=1000, blank=True, null=True)
   isComplete = models.BooleanField(default=False)
-  image = models.ImageField(blank=True, null=True)
+  image = models.ImageField()
   latitude = models.DecimalField(max_digits=10, decimal_places=8, blank=True, null=True)
   longitude = models.DecimalField(max_digits=11, decimal_places=8, blank=True, null=True)
   class Meta:
@@ -33,7 +33,7 @@ class Found(models.Model):
   color = models.CharField(max_length=20, blank=True, null=True)
   content = models.CharField(max_length=1000, blank=True, null=True)
   isComplete = models.BooleanField(default=False)
-  image = models.ImageField(blank=True, null=True)
+  image = models.ImageField()
   latitude = models.DecimalField(max_digits=10, decimal_places=8, blank=True, null=True)
   longitude = models.DecimalField(max_digits=11, decimal_places=8, blank=True, null=True)
   class Meta:

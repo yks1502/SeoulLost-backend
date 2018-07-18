@@ -27,6 +27,7 @@ def lostList(request):
         data = {'message': 'Lost list에 추가되었습니다'},
         status = status.HTTP_201_CREATED,
       )
+    print(serializer.errors)
     return Response(
       data = {'message': '오류'},
       status = status.HTTP_403_FORBIDDEN,
@@ -97,7 +98,7 @@ def foundList(request):
       serializer.save()
       return Response(
         data = {'message': 'Found list에 추가되었습니다'},
-        status = status.HTTP_200_OK,
+        status = status.HTTP_201_CREATED,
       )
     return Response(
       data = {'message': '오류'},

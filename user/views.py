@@ -42,6 +42,7 @@ def user_signup(request):
     user.nickname = nickname
     token = Token.objects.create(user=user)
     user.confirmationToken = token.key
+    print(token)
     user.address = address
     user.contact = contact
     user.save()
