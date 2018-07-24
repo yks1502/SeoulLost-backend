@@ -27,7 +27,7 @@ def lostList(request):
       serializer.save()
       new_lost = Lost.objects.get(id=serializer.data.get('id'))
       lostDate = new_lost.created
-      oneWeek = datetime.timedelta(minutes=1)
+      oneWeek = datetime.timedelta(days=7)
       related_users = Found.objects.filter(itemType=serializer.data.get('itemType'), isComplete=False).values_list('user','created').order_by('user').distinct()
       for related_user in related_users:
         if related_user[0] != request.user.id:
@@ -111,7 +111,7 @@ def foundList(request):
       serializer.save()
       new_found = Found.objects.get(id=serializer.data.get('id'))
       foundDate = new_found.created
-      oneWeek = datetime.timedelta(minutes=1)
+      oneWeek = datetime.timedelta(days=7)
       related_users = Lost.objects.filter(itemType=serializer.data.get('itemType'), isComplete=False).values_list('user','created').order_by('user').distinct()
       for related_user in related_users:
         if related_user[0] != request.user.id:
