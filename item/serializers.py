@@ -9,8 +9,8 @@ class LostSerializer(serializers.ModelSerializer):
   class Meta:
     model = Lost
     fields = ('id', 'user', 'created', 'updated', 'title', 'itemType',
-    'acquiredDate', 'storagePlace',
-    'acquiredPlace', 'color', 'content', 'isComplete', 'image', 'latitude', 'longitude')
+    'acquiredDate',
+    'lostPlace', 'color', 'content', 'isComplete', 'image', 'latitude', 'longitude')
 
 class FoundSerializer(serializers.ModelSerializer):
   image = serializers.ImageField(use_url=True, required=False)
@@ -19,3 +19,15 @@ class FoundSerializer(serializers.ModelSerializer):
     fields = ('id', 'user', 'created', 'updated', 'title', 'itemType',
     'acquiredDate', 'storagePlace',
     'acquiredPlace', 'color', 'content', 'isComplete', 'image', 'latitude', 'longitude')
+
+class LostAlarmSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = LostAlarm
+    fields = ('id', 'user', 'lost')
+    read_only_fields = ('user', 'lost',)
+
+class FoundAlarmSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = FoundAlarm
+    fields = ('id', 'user', 'found')
+    read_only_fields = ('user', 'found',)

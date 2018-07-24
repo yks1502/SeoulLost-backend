@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework import generics, status, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -6,6 +7,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 
 from user.models import User
+from item.models import *
 from user.serializers import *
 
 @api_view(['POST'])
@@ -90,3 +92,26 @@ def duplicate_username(request):
     data = {'message': '사용할 수 있는 아이디입니다'},
     status = status.HTTP_200_OK,
   )
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def userItems(request):
+  user_item_serializer = UserItemSerializer(request.user)
+  return Response(user_item_serializer.data)
+
+@api_view(['GET', 'DELETE'])
+@permission_classes((IsAuthenticated,))
+def userAlarms(request):
+  user = request.user
+  if request.method == 'GET':
+    user_alarm_serializer = UserAlarmSerializer(user)
+    return Response(user_alarm_serializer.data)
+  elif request.method == 'DELETE':
+    with transaction.atomic():
+      lost_alarms = LostAlarm.objects.filter(user=user)
+      found_alarms = FoundAlarm.objects.filter(user=user)
+      lost_alarms.delete()
+      found_alarms.delete()
+      return Response(
+        data = {'message': '알림이 삭제되었습니다'},
+      )

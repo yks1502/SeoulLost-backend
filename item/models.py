@@ -10,8 +10,7 @@ class Lost(models.Model):
   title = models.CharField(max_length=100)
   itemType = models.CharField(max_length=100)
   acquiredDate = models.DateTimeField()
-  acquiredPlace = models.CharField(max_length=100, blank=True, null=True)
-  storagePlace = models.CharField(max_length=100, blank=True, null=True)
+  lostPlace = models.CharField(max_length=100, blank=True, null=True)
   color = models.CharField(max_length=20, blank=True, null=True)
   content = models.CharField(max_length=1000, blank=True, null=True)
   isComplete = models.BooleanField(default=False)
@@ -38,3 +37,17 @@ class Found(models.Model):
   longitude = models.DecimalField(max_digits=11, decimal_places=8, blank=True, null=True)
   class Meta:
     ordering = ('-created',)
+
+class LostAlarm(models.Model):
+  user = models.ForeignKey(User, related_name='lost_alarm', on_delete=models.CASCADE)
+  lost = models.ForeignKey(Lost, related_name='lost_alarm_owner', on_delete=models.CASCADE)
+
+  class Meta:
+    ordering = ('id',)
+
+class FoundAlarm(models.Model):
+  user = models.ForeignKey(User, related_name='found_alarm', on_delete=models.CASCADE)
+  found = models.ForeignKey(Found, related_name='found_alarm_owner', on_delete=models.CASCADE)
+
+  class Meta:
+    ordering = ('id',)

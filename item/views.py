@@ -12,6 +12,8 @@ from user.models import User
 from user.permissions import IsOwner, IsOwnerOrReadOnly
 from django.http import QueryDict
 
+import datetime
+
 @api_view(['POST', 'GET'])
 @permission_classes((IsAuthenticated,))
 def lostList(request):
@@ -23,6 +25,18 @@ def lostList(request):
     serializer = LostSerializer(data=modifiedQueryDict)
     if serializer.is_valid():
       serializer.save()
+      new_lost = Lost.objects.get(id=serializer.data.get('id'))
+      lostDate = new_lost.created
+      oneWeek = datetime.timedelta(minutes=1)
+      related_users = Found.objects.filter(itemType=serializer.data.get('itemType'), isComplete=False).values_list('user','created').order_by('user').distinct()
+      for related_user in related_users:
+        if related_user[0] != request.user.id:
+          foundDate = related_user[1]
+          if lostDate-foundDate<oneWeek:
+            user = User.objects.get(id=related_user[0])
+            lost_alarm, created = LostAlarm.objects.get_or_create(user=user, lost=new_lost)
+            if created:
+              lost_alarm.save()
       return Response(
         data = {'message': 'Lost list에 추가되었습니다'},
         status = status.HTTP_201_CREATED,
@@ -68,7 +82,6 @@ def lostDetail(request, pk):
       )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
 def completeLost(request, pk):
@@ -96,6 +109,18 @@ def foundList(request):
     serializer = FoundSerializer(data=modifiedQueryDict)
     if serializer.is_valid():
       serializer.save()
+      new_found = Found.objects.get(id=serializer.data.get('id'))
+      foundDate = new_found.created
+      oneWeek = datetime.timedelta(minutes=1)
+      related_users = Lost.objects.filter(itemType=serializer.data.get('itemType'), isComplete=False).values_list('user','created').order_by('user').distinct()
+      for related_user in related_users:
+        if related_user[0] != request.user.id:
+          lostDate = related_user[1]
+          if foundDate-lostDate<oneWeek:
+            user = User.objects.get(id=related_user[0])
+            found_alarm, created = FoundAlarm.objects.get_or_create(user=user, found=new_found)
+            if created:
+              found_alarm.save()
       return Response(
         data = {'message': 'Found list에 추가되었습니다'},
         status = status.HTTP_201_CREATED,
@@ -155,3 +180,26 @@ def completeFound(request, pk):
     data = {'message': '주인에게 물건이 돌아갔습니다.'},
     status = status.HTTP_200_OK,
   )
+
+@api_view(['GET', 'DELETE'])
+@permission_classes((IsAuthenticated,))
+def getLostAlarms(request):
+  user = request.user
+  lost_alarms = LostAlarm.objects.filter(user=user)
+  print(lost_alarms)
+  if request.method == 'GET':
+    alarm_serializer = LostAlarmSerializer(lost_alarms, many=True)
+    return Response(alarm_serializer.data)
+  elif request.method == 'DELETE':
+    lost_alarms.delete()
+
+@api_view(['GET', 'DELETE'])
+@permission_classes((IsAuthenticated,))
+def getFoundAlarms(request):
+  user = request.user
+  found_alarms = FoundAlarm.objects.filter(user=user)
+  if request.method == 'GET':
+    alarm_serializer = FoundAlarmSerializer(found_alarms, many=True)
+    return Response(alarm_serializer.data)
+  elif request.method == 'DELETE':
+    found_alarms.delete()

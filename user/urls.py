@@ -10,4 +10,6 @@ urlpatterns = [
   url(r'profile$', views.get_user),
   url(r'^userlist$', views.UserList.as_view()),
   url(r'duplicate$', views.duplicate_username),
+  url(r'items$', views.userItems),
+  url(r'alarms$', views.userAlarms)
 ]
