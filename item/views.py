@@ -11,9 +11,11 @@ from item.serializers import *
 from user.models import User
 from user.permissions import IsOwner, IsOwnerOrReadOnly
 from django.http import QueryDict
+from django.db import transaction
 
 import datetime
 
+@transaction.atomic
 @api_view(['POST', 'GET'])
 @permission_classes((IsAuthenticated,))
 def lostList(request):
@@ -25,10 +27,10 @@ def lostList(request):
     serializer = LostSerializer(data=modifiedQueryDict)
     if serializer.is_valid():
       serializer.save()
-      new_lost = Lost.objects.get(id=serializer.data.get('id'))
-      lostDate = new_lost.created
+      newLost = Lost.objects.get(id=serializer.data.get('id'))
+      lostDate = newLost.created
       oneWeek = datetime.timedelta(days=7)
-      related_users = Found.objects.filter(itemType=serializer.data.get('itemType'), isComplete=False).values_list('user','created').order_by('user').distinct()
+      related_users = Found.objects.filter(itemType=serializer.data.get('itemType'), isComplete=False).values_list('user', 'created').order_by('user').distinct()
       for related_user in related_users:
         if related_user[0] != request.user.id:
           foundDate = related_user[1]
@@ -98,6 +100,7 @@ def completeLost(request, pk):
     status = status.HTTP_200_OK,
   )
 
+@transaction.atomic
 @api_view(['POST', 'GET'])
 @permission_classes((IsAuthenticated,))
 def foundList(request):
@@ -109,8 +112,8 @@ def foundList(request):
     serializer = FoundSerializer(data=modifiedQueryDict)
     if serializer.is_valid():
       serializer.save()
-      new_found = Found.objects.get(id=serializer.data.get('id'))
-      foundDate = new_found.created
+      newFound = Found.objects.get(id=serializer.data.get('id'))
+      foundDate = newFound.created
       oneWeek = datetime.timedelta(days=7)
       related_users = Lost.objects.filter(itemType=serializer.data.get('itemType'), isComplete=False).values_list('user','created').order_by('user').distinct()
       for related_user in related_users:
@@ -186,7 +189,6 @@ def completeFound(request, pk):
 def getLostAlarms(request):
   user = request.user
   lost_alarms = LostAlarm.objects.filter(user=user)
-  print(lost_alarms)
   if request.method == 'GET':
     alarm_serializer = LostAlarmSerializer(lost_alarms, many=True)
     return Response(alarm_serializer.data)

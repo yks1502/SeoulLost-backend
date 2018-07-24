@@ -9,11 +9,6 @@ class UserSerializer(serializers.ModelSerializer):
     fields = ('id', 'username', 'email', 'nickname', 'isConfirmed', 'created', 'updated', 'confirmationToken',
     'address', 'contact')
 
-  def get_alarm_count(self, user):
-    sale_alarm_count = SaleAlarm.objects.filter(user=user).count()
-    purchase_alarm_count = PurchaseAlarm.objects.filter(user=user).count()
-    return sale_alarm_count + purchase_alarm_count
-
 class NicknameSerializer(serializers.ModelSerializer):
   class Meta:
     model = User
@@ -54,7 +49,7 @@ class UserLostAlarmSerializer(serializers.ModelSerializer):
   class Meta:
     model = LostAlarm
     fields = ('id', 'user', 'lost')
-    read_only_fields = ('user', 'lost',)
+    read_only_fields = ('user', 'lost')
 
 class UserFoundAlarmSerializer(serializers.ModelSerializer):
   found = UserFoundSerializer()
@@ -62,7 +57,7 @@ class UserFoundAlarmSerializer(serializers.ModelSerializer):
   class Meta:
     model = FoundAlarm
     fields = ('id', 'user', 'found')
-    read_only_fields = ('user', 'found',)
+    read_only_fields = ('user', 'found')
 
 class UserAlarmSerializer(serializers.ModelSerializer):
   lost_alarm = UserLostAlarmSerializer(many=True)
@@ -70,4 +65,4 @@ class UserAlarmSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = User
-    fields = ('lost_alarm', 'found_alarm',)
+    fields = ('lost_alarm', 'found_alarm')
