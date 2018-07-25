@@ -11,7 +11,7 @@ from item.models import *
 from user.serializers import *
 
 @api_view(['POST'])
-def user_signup(request):
+def userSignup(request):
   data = request.data
   username = data.get('username', None)
   password = data.get('password', None)
@@ -61,8 +61,8 @@ def user_signup(request):
 @permission_classes((IsAuthenticated,))
 def get_user(request):
   if request.method == 'GET':
-    user_serializer = UserSerializer(request.user)
-    return Response(user_serializer.data)
+    userSerializer = UserSerializer(request.user)
+    return Response(userSerializer.data)
 
   elif request.method in ['PUT', 'PATCH']:
     user = request.user
@@ -81,7 +81,7 @@ class UserList(generics.ListAPIView):
   serializer_class = UserListSerializer
 
 @api_view(['POST'])
-def duplicate_username(request):
+def duplicateUsername(request):
   username = request.data
   if User.objects.filter(username=username):
     return Response(
@@ -96,22 +96,22 @@ def duplicate_username(request):
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def userItems(request):
-  user_item_serializer = UserItemSerializer(request.user)
-  return Response(user_item_serializer.data)
+  userItemSerializer = UserItemSerializer(request.user)
+  return Response(userItemSerializer.data)
 
 @api_view(['GET', 'DELETE'])
 @permission_classes((IsAuthenticated,))
 def userAlarms(request):
   user = request.user
   if request.method == 'GET':
-    user_alarm_serializer = UserAlarmSerializer(user)
-    return Response(user_alarm_serializer.data)
+    userAlarmSerializer = UserAlarmSerializer(user)
+    return Response(userAlarmSerializer.data)
   elif request.method == 'DELETE':
     with transaction.atomic():
-      lost_alarms = LostAlarm.objects.filter(user=user)
-      found_alarms = FoundAlarm.objects.filter(user=user)
-      lost_alarms.delete()
-      found_alarms.delete()
+      lostAlarms = LostAlarm.objects.filter(user=user)
+      foundAlarms = FoundAlarm.objects.filter(user=user)
+      lostAlarms.delete()
+      foundAlarms.delete()
       return Response(
         data = {'message': '알림이 삭제되었습니다'},
       )

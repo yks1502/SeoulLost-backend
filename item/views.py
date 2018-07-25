@@ -30,15 +30,15 @@ def lostList(request):
       newLost = Lost.objects.get(id=serializer.data.get('id'))
       lostDate = newLost.created
       oneWeek = datetime.timedelta(days=7)
-      related_users = Found.objects.filter(itemType=serializer.data.get('itemType'), isComplete=False).values_list('user', 'created').order_by('user').distinct()
-      for related_user in related_users:
-        if related_user[0] != request.user.id:
-          foundDate = related_user[1]
+      relatedUsers = Found.objects.filter(itemType=serializer.data.get('itemType'), isComplete=False).values_list('user', 'created').order_by('user').distinct()
+      for relatedUser in relatedUsers:
+        if relatedUser[0] != request.user.id:
+          foundDate = relatedUser[1]
           if lostDate - foundDate < oneWeek:
-            user = User.objects.get(id=related_user[0])
-            lost_alarm, created = LostAlarm.objects.get_or_create(user=user, lost=newLost)
+            user = User.objects.get(id=relatedUser[0])
+            lostAlarm, created = LostAlarm.objects.get_or_create(user=user, lost=newLost)
             if created:
-              lost_alarm.save()
+              lostAlarm.save()
       return Response(
         data = {'message': 'Lost list에 추가되었습니다'},
         status = status.HTTP_201_CREATED,
@@ -63,8 +63,8 @@ def lostDetail(request, pk):
     data={'message': '권한이 없습니다'}
   )
   if request.method == 'GET':
-    lost_serializer = LostSerializer(lost)
-    return Response(lost_serializer.data)
+    lostSerializer = LostSerializer(lost)
+    return Response(lostSerializer.data)
   elif request.method == 'DELETE':
     lost.delete()
     return Response(
@@ -115,15 +115,15 @@ def foundList(request):
       newFound = Found.objects.get(id=serializer.data.get('id'))
       foundDate = newFound.created
       oneWeek = datetime.timedelta(days=7)
-      related_users = Lost.objects.filter(itemType=serializer.data.get('itemType'), isComplete=False).values_list('user','created').order_by('user').distinct()
-      for related_user in related_users:
-        if related_user[0] != request.user.id:
-          lostDate = related_user[1]
+      relatedUsers = Lost.objects.filter(itemType=serializer.data.get('itemType'), isComplete=False).values_list('user', 'created').order_by('user').distinct()
+      for relatedUser in relatedUsers:
+        if relatedUser[0] != request.user.id:
+          lostDate = relatedUser[1]
           if foundDate - lostDate < oneWeek:
-            user = User.objects.get(id=related_user[0])
-            found_alarm, created = FoundAlarm.objects.get_or_create(user=user, found=newFound)
+            user = User.objects.get(id=relatedUser[0])
+            foundAlarm, created = FoundAlarm.objects.get_or_create(user=user, found=newFound)
             if created:
-              found_alarm.save()
+              foundAlarm.save()
       return Response(
         data = {'message': 'Found list에 추가되었습니다'},
         status = status.HTTP_201_CREATED,
@@ -147,8 +147,8 @@ def foundDetail(request, pk):
     data = {'message': '권한이 없습니다'}
   )
   if request.method == 'GET':
-    found_serializer = FoundSerializer(found)
-    return Response(found_serializer.data)
+    foundSerializer = FoundSerializer(found)
+    return Response(foundSerializer.data)
   elif request.method == 'DELETE':
     found.delete()
     return Response(
