@@ -15,9 +15,9 @@ from django.db import transaction
 
 import datetime
 
-@transaction.atomic
 @api_view(['POST', 'GET'])
 @permission_classes((IsAuthenticated,))
+@transaction.atomic
 def lostList(request):
   if request.method == 'POST':
     dictData = request.data.dict()
@@ -34,9 +34,9 @@ def lostList(request):
       for related_user in related_users:
         if related_user[0] != request.user.id:
           foundDate = related_user[1]
-          if lostDate-foundDate<oneWeek:
+          if lostDate - foundDate < oneWeek:
             user = User.objects.get(id=related_user[0])
-            lost_alarm, created = LostAlarm.objects.get_or_create(user=user, lost=new_lost)
+            lost_alarm, created = LostAlarm.objects.get_or_create(user=user, lost=newLost)
             if created:
               lost_alarm.save()
       return Response(
@@ -100,9 +100,9 @@ def completeLost(request, pk):
     status = status.HTTP_200_OK,
   )
 
-@transaction.atomic
 @api_view(['POST', 'GET'])
 @permission_classes((IsAuthenticated,))
+@transaction.atomic
 def foundList(request):
   if request.method == 'POST':
     dictData = request.data.dict()
@@ -119,9 +119,9 @@ def foundList(request):
       for related_user in related_users:
         if related_user[0] != request.user.id:
           lostDate = related_user[1]
-          if foundDate-lostDate<oneWeek:
+          if foundDate - lostDate < oneWeek:
             user = User.objects.get(id=related_user[0])
-            found_alarm, created = FoundAlarm.objects.get_or_create(user=user, found=new_found)
+            found_alarm, created = FoundAlarm.objects.get_or_create(user=user, found=newFound)
             if created:
               found_alarm.save()
       return Response(
@@ -188,20 +188,20 @@ def completeFound(request, pk):
 @permission_classes((IsAuthenticated,))
 def getLostAlarms(request):
   user = request.user
-  lost_alarms = LostAlarm.objects.filter(user=user)
+  lostAlarms = LostAlarm.objects.filter(user=user)
   if request.method == 'GET':
-    alarm_serializer = LostAlarmSerializer(lost_alarms, many=True)
-    return Response(alarm_serializer.data)
+    alarmSerializer = LostAlarmSerializer(lostAlarms, many=True)
+    return Response(alarmSerializer.data)
   elif request.method == 'DELETE':
-    lost_alarms.delete()
+    lostAlarms.delete()
 
 @api_view(['GET', 'DELETE'])
 @permission_classes((IsAuthenticated,))
 def getFoundAlarms(request):
   user = request.user
-  found_alarms = FoundAlarm.objects.filter(user=user)
+  foundAlarms = FoundAlarm.objects.filter(user=user)
   if request.method == 'GET':
-    alarm_serializer = FoundAlarmSerializer(found_alarms, many=True)
-    return Response(alarm_serializer.data)
+    alarmSerializer = FoundAlarmSerializer(foundAlarms, many=True)
+    return Response(alarmSerializer.data)
   elif request.method == 'DELETE':
-    found_alarms.delete()
+    foundAlarms.delete()
