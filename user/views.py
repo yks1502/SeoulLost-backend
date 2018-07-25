@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework import generics, status, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -6,10 +7,11 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 
 from user.models import User
+from item.models import *
 from user.serializers import *
 
 @api_view(['POST'])
-def user_signup(request):
+def userSignup(request):
   data = request.data
   username = data.get('username', None)
   password = data.get('password', None)
@@ -59,8 +61,8 @@ def user_signup(request):
 @permission_classes((IsAuthenticated,))
 def get_user(request):
   if request.method == 'GET':
-    user_serializer = UserSerializer(request.user)
-    return Response(user_serializer.data)
+    userSerializer = UserSerializer(request.user)
+    return Response(userSerializer.data)
 
   elif request.method in ['PUT', 'PATCH']:
     user = request.user
@@ -79,7 +81,7 @@ class UserList(generics.ListAPIView):
   serializer_class = UserListSerializer
 
 @api_view(['POST'])
-def duplicate_username(request):
+def duplicateUsername(request):
   username = request.data
   if User.objects.filter(username=username):
     return Response(
@@ -90,3 +92,26 @@ def duplicate_username(request):
     data = {'message': '사용할 수 있는 아이디입니다'},
     status = status.HTTP_200_OK,
   )
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def userItems(request):
+  userItemSerializer = UserItemSerializer(request.user)
+  return Response(userItemSerializer.data)
+
+@api_view(['GET', 'DELETE'])
+@permission_classes((IsAuthenticated,))
+def userAlarms(request):
+  user = request.user
+  if request.method == 'GET':
+    userAlarmSerializer = UserAlarmSerializer(user)
+    return Response(userAlarmSerializer.data)
+  elif request.method == 'DELETE':
+    with transaction.atomic():
+      lostAlarms = LostAlarm.objects.filter(user=user)
+      foundAlarms = FoundAlarm.objects.filter(user=user)
+      lostAlarms.delete()
+      foundAlarms.delete()
+      return Response(
+        data = {'message': '알림이 삭제되었습니다'},
+      )
