@@ -24,10 +24,10 @@ class LostAlarmSerializer(serializers.ModelSerializer):
   class Meta:
     model = LostAlarm
     fields = ('id', 'user', 'lost')
-    read_only_fields = ('user', 'lost',)
+    read_only_fields = ('user', 'lost')
 
 class FoundAlarmSerializer(serializers.ModelSerializer):
   class Meta:
     model = FoundAlarm
     fields = ('id', 'user', 'found')
-    read_only_fields = ('user', 'found',)
+    read_only_fields = ('user', 'found')
