@@ -136,9 +136,9 @@ REST_FRAMEWORK = {
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-APPEND_SLASH=False
+APPEND_SLASH = False
 
-AUTH_USER_MODEL='user.User'
+AUTH_USER_MODEL ='user.User'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -5,6 +5,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.settings import api_settings
 
 from item.models import *
 from item.serializers import *
@@ -43,15 +44,16 @@ def lostList(request):
         data = {'message': 'Lost list에 추가되었습니다'},
         status = status.HTTP_201_CREATED,
       )
-    print(serializer.errors)
     return Response(
       data = {'message': '오류'},
       status = status.HTTP_403_FORBIDDEN,
     )
   elif request.method == 'GET':
+    paginator = api_settings.DEFAULT_PAGINATION_CLASS()
     queryset = Lost.objects.all()
-    serializers = LostSerializer(queryset, many=True)
-    return Response(serializers.data)
+    page = paginator.paginate_queryset(queryset, request)
+    serializers = LostRetrieveSerializer(page, many=True)
+    return paginator.get_paginated_response(serializers.data)
 
 @api_view(['GET', 'DELETE', 'PUT'])
 @permission_classes((IsAuthenticated,))
@@ -133,9 +135,11 @@ def foundList(request):
       status = status.HTTP_403_FORBIDDEN,
     )
   elif request.method == 'GET':
+    paginator = api_settings.DEFAULT_PAGINATION_CLASS()
     queryset = Found.objects.all()
-    serializers = FoundSerializer(queryset, many=True)
-    return Response(serializers.data)
+    page = paginator.paginate_queryset(queryset, request)
+    serializers = FoundRetrieveSerializer(page, many=True)
+    return paginator.get_paginated_response(serializers.data)
 
 @api_view(['GET', 'DELETE', 'PUT'])
 @permission_classes((IsAuthenticated,))
