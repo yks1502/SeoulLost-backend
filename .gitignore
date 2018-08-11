@@ -20,6 +20,7 @@ coverage.*
 
 SeoulLost_backend/__pycache__/
 item/__pycache__/
-item/migrations/__pycache__/
+item/migrations/
 user/__pycache__/
-user/__pycache__/
+user/migrations/
+media/
